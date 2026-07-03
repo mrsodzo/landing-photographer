@@ -414,11 +414,12 @@ h1, h2, h3 { font-family: var(--font-serif); font-weight: 500; line-height: 1.2;
   object-fit: cover;
 }
 .about__video-play {
+  position: relative;
+  z-index: 1;
   width: 80px;
   height: 80px;
   border-radius: 50%;
   background: rgba(200,169,126,0.9);
-  border: none;
   color: #fff;
   cursor: pointer;
   display: flex;
