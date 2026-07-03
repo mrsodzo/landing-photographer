@@ -154,15 +154,17 @@
     const formData = new FormData(bookingForm);
     const data = Object.fromEntries(formData.entries());
 
-    // Simulate Telegram notification
     const message = `Новая заявка с лендинга:%0AИмя: ${encodeURIComponent(data.name)}%0AТелефон: ${encodeURIComponent(data.phone)}%0AДата: ${encodeURIComponent(data.date)}%0AПакет: ${encodeURIComponent(data.package)}`;
 
-    // In production: replace with real bot token
-    // const token = 'YOUR_BOT_TOKEN';
-    // const chatId = 'YOUR_CHAT_ID';
-    // await fetch(\`https://api.telegram.org/bot\${token}/sendMessage?chat_id=\${chatId}&text=\${message}\`);
+    const cfg = window.LANDING_CONFIG || {};
+    const token = cfg.telegram?.botToken;
+    const chatId = cfg.telegram?.chatId;
 
-    console.log('Telegram message (simulated):', decodeURIComponent(message));
+    if (token && chatId) {
+      await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${message}`);
+    }
+
+    console.log('Telegram message:', decodeURIComponent(message));
 
     bookingForm.reset();
     formSuccess.hidden = false;
