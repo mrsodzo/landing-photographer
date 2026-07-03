@@ -15,6 +15,7 @@
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');
   const lightboxClose = document.getElementById('lightboxClose');
+  const phoneInput = document.getElementById('phone');
 
   let reviewIndex = 0;
 
@@ -147,6 +148,66 @@
     reviewIndex = (reviewIndex + 1) % reviewCountFn();
     updateReviews();
   }, 5000);
+
+  // ===== Phone mask =====
+  function applyPhoneMask(el) {
+    if (!el) return;
+    const prefix = '+7 ';
+    let digits = el.value.replace(/\D/g, '');
+    if (digits[0] === '7' || digits[0] === '8') {
+      digits = digits.slice(1);
+    }
+    digits = digits.slice(0, 10);
+
+    let formatted = prefix;
+    if (digits.length > 0) formatted += '(' + digits.slice(0, 3);
+    if (digits.length >= 3) formatted += ') ';
+    if (digits.length >= 4) formatted += digits.slice(3, 6);
+    if (digits.length >= 6) formatted += '-' + digits.slice(6, 8);
+    if (digits.length >= 8) formatted += '-' + digits.slice(8, 10);
+
+    el.value = formatted;
+  }
+
+  if (phoneInput) {
+    phoneInput.addEventListener('focus', () => {
+      if (!phoneInput.value) {
+        phoneInput.value = '+7 (';
+        phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+      }
+    });
+
+    phoneInput.addEventListener('input', () => {
+      applyPhoneMask(phoneInput);
+      if (phoneInput.value.length < 6) {
+        phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+      }
+    });
+
+    phoneInput.addEventListener('keydown', (e) => {
+      if (
+        e.key.length === 1 &&
+        !/[0-9]/.test(e.key) &&
+        !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key) &&
+        !(e.ctrlKey || e.metaKey)
+      ) {
+        e.preventDefault();
+      }
+    });
+
+    phoneInput.addEventListener('blur', () => {
+      let digits = phoneInput.value.replace(/\D/g, '');
+      if (digits.length > 0 && digits[0] === '7') {
+        digits = digits.slice(1);
+      }
+      if (digits.length < 10 && digits.length > 0) {
+        phoneInput.setCustomValidity('Введите номер полностью');
+      } else {
+        phoneInput.setCustomValidity('');
+        applyPhoneMask(phoneInput);
+      }
+    });
+  }
 
   // ===== Booking form =====
   bookingForm.addEventListener('submit', async (e) => {
