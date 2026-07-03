@@ -38,7 +38,32 @@ npx serve .
 python -m http.server 8080
 ```
 
-## Конфигурация Telegram
+## Деплой на Netlify
+
+Сайт развернут по адресу: https://landing-photographer.netlify.app
+
+### Настройка Telegram бота на Netlify
+
+1. В панели управления Netlify перейдите в **Site settings > Build & deploy > Environment**
+2. Добавьте переменные окружения:
+   - `TELEGRAM_BOT_TOKEN` — токен бота от @BotFather
+   - `TELEGRAM_CHAT_ID` — ID чата (личного или группового), куда отправлять заявки
+3. Настройте сборку: **Build command**: `node build.js`
+4. В репозитории должен быть файл `build.js`, который генерирует `js/config.js` из переменных окружения:
+   ```js
+   const fs = require('fs');
+   const config = {
+     telegram: {
+       botToken: process.env.TELEGRAM_BOT_TOKEN,
+       chatId: process.env.TELEGRAM_CHAT_ID
+     }
+   };
+   fs.writeFileSync('js/config.js', 'window.LANDING_CONFIG = ' + JSON.stringify(config, null, 2) + ';');
+   ```
+
+> Важно: `js/config.js` добавлен в `.gitignore` и не попадает в репозиторий.
+
+## Конфигурация Telegram (локально)
 
 1. Создайте бота через [@BotFather](https://t.me/BotFather) и получите `BOT_TOKEN`.
 2. Узнайте `CHAT_ID` (личный или групповой), куда должны приходить заявки.
